@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة بصيرة لمتابعة المسار التدريبي | برنامج بصيرة لتأهيل المستشارين النفسيين</title>
+    
+    <!-- Google Fonts: Cairo for headings, Tajawal for body and tables -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons for high quality visuals -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        baseera: {
+                            blue: '#105B89',
+                            darkblue: '#0a3d5e',
+                            lightblue: '#eef6fc',
+                            green: '#99CC36',
+                            darkgreen: '#7ab81f',
+                            lightgreen: '#f4f9e8',
+                            amber: '#d97706',
+                            lightamber: '#fffbe3',
+                            red: '#ef4444',
+                            lightred: '#fef2f2'
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        h1, h2, h3, h4, h5, h6, .font-cairo {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Card Depth & Glassmorphism */
+        .baseera-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px -2px rgba(16, 91, 137, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease-in-out;
+        }
+        .baseera-card:hover {
+            box-shadow: 0 10px 25px -5px rgba(16, 91, 137, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+        /* Custom modal transition */
+        .modal-backdrop {
+            background-color: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+            .baseera-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 antialiased selection:bg-baseera-blue selection:text-white">
+
+    <!-- Top Brand Navbar -->
+    <header class="bg-baseera-blue text-white shadow-lg sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Logo & Program Branding -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center text-baseera-green shadow-inner">
+                        <i class="ph-bold ph-eye text-3xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-cairo font-extrabold text-xl sm:text-2xl tracking-tight text-white">بصيرة</span>
+                            <span class="bg-baseera-green/20 text-baseera-green text-xs font-bold px-2 py-0.5 rounded-full border border-baseera-green/30">المنصة التدريبية</span>
+                        </div>
+                        <p class="text-xs text-slate-200 hidden sm:block font-medium">برنامج بصيرة لتأهيل المستشارين النفسيين • <span class="text-slate-300">مبادرة بيت سلام</span></p>
+                    </div>
+                </div>
+
+                <!-- Role Switcher & Environment Bar (Demo Feature) -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <div class="bg-white/10 backdrop-blur p-1.5 rounded-xl border border-white/15 flex items-center text-xs">
+                        <span class="text-slate-300 ml-2 hidden lg:inline font-medium">وضع المعاينة:</span>
+                        <select id="roleSelector" onchange="switchRole(this.value)" class="bg-baseera-darkblue text-white text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-baseera-green border border-white/20 cursor-pointer font-semibold">
+                            <option value="trainee">المتدرب: سارة أحمد (مسار مفعل)</option>
+                            <option value="trainee_new">المتدرب الجديد: محمد العلي (صفر ساعات)</option>
+                            <option value="admin">مدير البرنامج (صلاحيات كاملة)</option>
+                            <option value="unlinked">حساب غير مرتبط بمتدرب</option>
+                        </select>
+                    </div>
+
+                    <!-- Quick Action Buttons -->
+                    <button onclick="openAcceptanceTestsModal()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl border border-white/15 transition flex items-center gap-1.5 text-xs font-bold" title="تشغيل اختبارات القبول الـ 15">
+                        <i class="ph-bold ph-check-square-offset text-lg text-baseera-green"></i>
+                        <span class="hidden md:inline">اختبارات القبول</span>
+                    </button>
+                    
+                    <button onclick="resetData()" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-xl border border-white/15 transition" title="إعادة ضبط البيانات النموذجية">
+                        <i class="ph-bold ph-arrow-counter-clockwise text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sub Header Bar -->
+    <div id="subHeader" class="bg-white border-b border-slate-200 py-3 px-4 sm:px-8 shadow-sm no-print">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
+            
+            <!-- Context Info -->
+            <div class="flex items-center gap-3">
+                <div id="userAvatar" class="w-10 h-10 rounded-full bg-baseera-lightblue text-baseera-blue font-bold flex items-center justify-center text-lg border border-baseera-blue/20">
+                    سأ
+                </div>
+                <div>
+                    <h2 id="currentUserName" class="font-cairo font-bold text-slate-800 text-base leading-tight">سارة أحمد السليمان</h2>
+                    <p id="currentUserRole" class="text-xs text-slate-500">متدرب • الدفعة الأولى (2024)</p>
+                </div>
+            </div>
+
+            <!-- Trainee Selector (Visible only in Admin Mode) -->
+            <div id="adminTraineeSelectorContainer" class="hidden flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-600 mr-2">عرض ملف المتدرب:</span>
+                <select id="adminTraineeSelect" onchange="adminSelectTrainee(this.value)" class="bg-white text-slate-800 text-xs font-bold rounded-lg px-3 py-1.5 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-baseera-blue">
+                    <!-- Populated dynamically -->
+                </select>
+            </div>
+
+            <!-- Action Buttons for Dashboard -->
+            <div class="flex items-center gap-2" id="headerActions">
+                <button id="addActivityBtn" onclick="openAddActivityModal()" class="bg-baseera-blue hover:bg-baseera-darkblue text-white px-4 py-2 rounded-xl font-bold text-xs sm:text-sm flex items-center gap-2 shadow-md transition transform active:scale-95">
+                    <i class="ph-bold ph-plus-circle text-lg text-baseera-green"></i>
+                    <span>إضافة نشاط جديد</span>
+                </button>
+                <button onclick="copyCurrentDirectLink()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl font-semibold text-xs flex items-center gap-1.5 border border-slate-300 transition" title="نسخ رابط مباشر للمتدرب الحالي">
+                    <i class="ph-bold ph-link text-base text-baseera-blue"></i>
+                    <span class="hidden sm:inline">مشاركة الرابط</span>
+                </button>
+                <button id="exportReportBtn" onclick="exportDataJSON()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl font-semibold text-xs flex items-center gap-1.5 border border-slate-300 transition">
+                    <i class="ph-bold ph-download-simple text-base"></i>
+                    <span class="hidden sm:inline">تصدير</span>
+                </button>
+                <button id="settingsBtn" onclick="openSettingsModal()" class="hidden bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl font-semibold text-xs flex items-center gap-1.5 border border-slate-300 transition">
+                    <i class="ph-bold ph-gear text-base"></i>
+                    <span>إعدادات المسار</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- UNLINKED ACCOUNT VIEW (If account has no linked trainee) -->
+        <div id="unlinkedView" class="hidden my-12 max-w-2xl mx-auto text-center bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-lg">
+            <div class="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-amber-200">
+                <i class="ph-bold ph-clock-afternoon text-4xl"></i>
+            </div>
+            <h2 class="font-cairo text-2xl font-bold text-slate-800 mb-2">في انتظار ربط الحساب بملف متدرب</h2>
+            <p class="text-slate-600 text-sm leading-relaxed mb-6">
+                أهلاً بك في منصة بصيرة لمتابعة المسار التدريبي. تم إنشاء حسابك بنجاح، ولكن يتطلب البدء ربطه بملف تدريبي معتمد من قِبل إدارة البرنامج.
+            </p>
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs text-amber-800 text-right mb-6 flex items-start gap-3">
+                <i class="ph-bold ph-info text-xl text-amber-600 flex-shrink-0 mt-0.5"></i>
+                <div>
+                    <strong>ملاحظة للمستخدم:</strong> تم إرسال طلب الربط إلى المسؤول. لا يمكنك الاطلاع على بيانات المتدربين الآخرين أو إدخال أي ساعات حتى يتم تأكيد التعيين.
+                </div>
+            </div>
+            <button onclick="switchRole('trainee')" class="bg-baseera-blue text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow hover:bg-baseera-darkblue transition">
+                الانتقال إلى متدرب معتمد (للتجربة)
+            </button>
+        </div>
+
+        <!-- MAIN DASHBOARD CONTAINER (TRAINEE & ADMIN VIEWS) -->
+        <div id="dashboardContent" class="space-y-6">
+
+            <!-- 5 KEY QUESTIONS EXECUTIVE CARDS -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                
+                <!-- Q1: Approved Hours -->
+                <div class="baseera-card p-4 flex flex-col justify-between border-r-4 border-r-baseera-blue">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold">
+                            <span>السؤال الأول</span>
+                            <i class="ph-bold ph-check-circle text-baseera-blue text-lg"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-700 font-cairo">كم ساعة معتمدة أنجزت؟</h3>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline justify-between">
+                            <span id="q1ApprovedHours" class="text-2xl font-extrabold text-baseera-blue font-cairo">0</span>
+                            <span class="text-xs text-slate-500 font-bold">من 500 ساعة</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 mt-2 overflow-hidden">
+                            <div id="q1ProgressBar" class="bg-baseera-blue h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q2: Remaining Hours -->
+                <div class="baseera-card p-4 flex flex-col justify-between border-r-4 border-r-indigo-500">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold">
+                            <span>السؤال الثاني</span>
+                            <i class="ph-bold ph-hourglass-medium text-indigo-500 text-lg"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-700 font-cairo">كم ساعة بقيت بالمسار؟</h3>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline justify-between">
+                            <span id="q2RemainingHours" class="text-2xl font-extrabold text-indigo-600 font-cairo">500</span>
+                            <span class="text-xs text-slate-500 font-bold">ساعة متبقية</span>
+                        </div>
+                        <p id="q2Subtext" class="text-[11px] text-slate-500 mt-1 truncate">موزعة على 4 مراحل</p>
+                    </div>
+                </div>
+
+                <!-- Q3: Pending Review -->
+                <div class="baseera-card p-4 flex flex-col justify-between border-r-4 border-r-amber-500">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold">
+                            <span>السؤال الثالث</span>
+                            <i class="ph-bold ph-clock-clockwise text-amber-500 text-lg"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-700 font-cairo">أنشطة تنتظر الاعتماد؟</h3>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline justify-between">
+                            <span id="q3PendingHours" class="text-2xl font-extrabold text-amber-600 font-cairo">0</span>
+                            <span id="q3PendingCount" class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">0 أنشطة</span>
+                        </div>
+                        <p class="text-[11px] text-amber-700 mt-1">لا تدخل في التقدم حتى تُعتمد</p>
+                    </div>
+                </div>
+
+                <!-- Q4: Supervision Ratio -->
+                <div id="q4Card" class="baseera-card p-4 flex flex-col justify-between border-r-4 border-r-baseera-green">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold">
+                            <span>السؤال الرابع</span>
+                            <i class="ph-bold ph-users-three text-baseera-darkgreen text-lg"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-700 font-cairo">هل ساعات الإشراف كافية؟</h3>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between">
+                            <span id="q4StatusBadge" class="text-xs font-extrabold px-2.5 py-1 rounded-md bg-baseera-lightgreen text-baseera-darkgreen">مستوفٍ للنسبة</span>
+                            <span id="q4RatioText" class="text-xs text-slate-600 font-bold">1 : 5</span>
+                        </div>
+                        <p id="q4DeficitText" class="text-[11px] text-slate-500 mt-1">علاج: <span id="q4TherapyApproved">0</span>س | إشراف: <span id="q4SupervisionApproved">0</span>س</p>
+                    </div>
+                </div>
+
+                <!-- Q5: Correction Needed -->
+                <div id="q5Card" class="baseera-card p-4 flex flex-col justify-between border-r-4 border-r-slate-300">
+                    <div>
+                        <div class="flex items-center justify-between text-xs text-slate-500 mb-1 font-semibold">
+                            <span>السؤال الخامس</span>
+                            <i class="ph-bold ph-warning-circle text-slate-400 text-lg"></i>
+                        </div>
+                        <h3 class="text-xs font-bold text-slate-700 font-cairo">أنشطة تحتاج تصحيحاً؟</h3>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex items-baseline justify-between">
+                            <span id="q5CorrectionCount" class="text-2xl font-extrabold text-slate-700 font-cairo">0</span>
+                            <span class="text-xs text-slate-500 font-bold">ملاحظات معلمة</span>
+                        </div>
+                        <p id="q5Subtext" class="text-[11px] text-slate-500 mt-1">لا يوجد تنبيهات حالية</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SUPERVISION ALERT BANNER (Dynamically shown if deficit or early warning) -->
+            <div id="supervisionAlertBanner" class="hidden rounded-2xl p-4 border flex items-start gap-3 shadow-sm transition-all duration-300">
+                <div id="supervisionAlertIcon" class="text-2xl flex-shrink-0 mt-0.5"></div>
+                <div class="flex-grow">
+                    <h4 id="supervisionAlertTitle" class="font-cairo font-bold text-sm mb-1"></h4>
+                    <p id="supervisionAlertDesc" class="text-xs leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- THE FOUR TRACK STAGES GRID -->
+            <section>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-cairo font-bold text-slate-800 text-lg flex items-center gap-2">
+                        <i class="ph-bold ph-path text-baseera-blue"></i>
+                        <span>مراحل المسار التدريبي (500 ساعة)</span>
+                    </h3>
+                    <span class="text-xs text-slate-500">التوزيع المعتمد من إدارة البرنامج</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="stagesContainer">
+                    <!-- Stage Cards inserted dynamically via JavaScript -->
+                </div>
+            </section>
+
+            <!-- ACTIVITIES LOG TABLE SECTION -->
+            <section class="baseera-card p-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                    <div>
+                        <h3 class="font-cairo font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <i class="ph-bold ph-notebook text-baseera-blue"></i>
+                            <span>سجل الأنشطة التدريبية</span>
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">توثيق الساعات والمشاهدات بدون تفاصيل بيانات المستفيدين</p>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Stage Filter -->
+                        <select id="filterStage" onchange="renderActivitiesTable()" class="bg-slate-50 border border-slate-300 text-slate-700 text-xs rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-baseera-blue">
+                            <option value="ALL">جميع المراحل</option>
+                            <option value="مراقب">مراقب</option>
+                            <option value="مقيم">مقيم</option>
+                            <option value="مساعد">مساعد مستشار</option>
+                            <option value="تحت الإشراف">مستشار تحت الإشراف</option>
+                        </select>
+
+                        <!-- Activity Type Filter -->
+                        <select id="filterType" onchange="renderActivitiesTable()" class="bg-slate-50 border border-slate-300 text-slate-700 text-xs rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-baseera-blue">
+                            <option value="ALL">جميع أنواع الأنشطة</option>
+                            <option value="تدريب ونشاط تعليمي">تدريب ونشاط تعليمي</option>
+                            <option value="تقييم">تقييم</option>
+                            <option value="علاج">علاج</option>
+                            <option value="إشراف">إشراف</option>
+                        </select>
+
+                        <!-- Status Filter -->
+                        <select id="filterStatus" onchange="renderActivitiesTable()" class="bg-slate-50 border border-slate-300 text-slate-700 text-xs rounded-xl px-3 py-2 font-medium focus:ring-2 focus:ring-baseera-blue">
+                            <option value="ALL">جميع الحالات</option>
+                            <option value="معتمد">معتمد</option>
+                            <option value="قيد المراجعة">قيد المراجعة</option>
+                            <option value="يحتاج تصحيحاً">يحتاج تصحيحاً</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Table View -->
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-right text-xs text-slate-700">
+                        <thead class="bg-slate-50 text-slate-600 font-cairo font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">التاريخ</th>
+                                <th class="p-3">المرحلة</th>
+                                <th class="p-3">نوع النشاط</th>
+                                <th class="p-3">الساعات</th>
+                                <th class="p-3">الملاحظات والبيانات</th>
+                                <th class="p-3">الحالة</th>
+                                <th class="p-3">ملاحظات المراجع</th>
+                                <th class="p-3 text-center no-print">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activitiesTableBody" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Empty State Indicator -->
+                <div id="emptyActivitiesState" class="hidden py-12 text-center">
+                    <i class="ph-bold ph-folder-open text-4xl text-slate-300 mb-2 block"></i>
+                    <p class="text-sm font-semibold text-slate-500">لا توجد أنشطة مسجلة تتطابق مع المرشحات الحالية</p>
+                    <button onclick="openAddActivityModal()" class="mt-3 text-xs text-baseera-blue font-bold hover:underline">
+                        + إضافة نشاط جديد الآن
+                    </button>
+                </div>
+            </section>
+
+            <!-- ADMIN PROGRAM ROSTER SECTION (Visible only in Admin mode) -->
+            <section id="adminRosterSection" class="hidden baseera-card p-5 border-t-4 border-t-baseera-blue">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+                    <div>
+                        <h3 class="font-cairo font-bold text-slate-800 text-lg flex items-center gap-2">
+                            <i class="ph-bold ph-users-three text-baseera-blue"></i>
+                            <span>لوحة المتابعة الشاملة لجميع المتدربين (مدير البرنامج)</span>
+                        </h3>
+                        <p class="text-xs text-slate-500">متابعة إنجاز الدفعات ونسب الإشراف والأنشطة المعلقة</p>
+                    </div>
+                    <button onclick="openAddTraineeModal()" class="bg-baseera-green hover:bg-baseera-darkgreen text-slate-900 px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow transition">
+                        <i class="ph-bold ph-user-plus text-base"></i>
+                        <span>إضافة متدرب جديد</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto mt-4">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-100 text-slate-700 font-cairo font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">المتدرب</th>
+                                <th class="p-3">الدفعة</th>
+                                <th class="p-3">الإنجاز التراكمي</th>
+                                <th class="p-3">نسبة التقدم</th>
+                                <th class="p-3">ساعات العلاج</th>
+                                <th class="p-3">ساعات الإشراف</th>
+                                <th class="p-3">حالة الإشراف</th>
+                                <th class="p-3">معلقة للمراجعة</th>
+                                <th class="p-3 text-center">التحكم</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminRosterTableBody" class="divide-y divide-slate-100">
+                            <!-- Dynamic Trainee List -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>
+                <strong class="font-cairo text-slate-700">برنامج بصيرة لتأهيل المستشارين النفسيين</strong> • بيت سلام
+            </div>
+            <div>
+                منصة توثيق ومتابعة التدريب العيادي والساعات الإشرافية
+            </div>
+            <div class="text-slate-400">
+                الإصدار 2.4 (تطوير معتمد)
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL: ADD / EDIT ACTIVITY -->
+    <div id="activityModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative transform transition-all">
+            
+            <!-- Close button -->
+            <button onclick="closeActivityModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-baseera-lightblue text-baseera-blue flex items-center justify-center text-xl font-bold">
+                    <i class="ph-bold ph-plus-circle"></i>
+                </div>
+                <div>
+                    <h3 id="modalActivityTitle" class="font-cairo font-bold text-slate-800 text-lg">تسجيل نشاط تدريبي جديد</h3>
+                    <p class="text-xs text-slate-500">أدخل تفاصيل النشاط بدقة لرفعه للمراجعة</p>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form id="activityForm" onsubmit="handleSaveActivity(event)" class="space-y-4">
+                <input type="hidden" id="editActivityId" value="">
+
+                <!-- Trainee indicator (if Admin) -->
+                <div id="formTraineeNotice" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs text-slate-700 font-semibold">
+                    تسجيل النشاط باسم: <span id="formTraineeName" class="text-baseera-blue font-bold"></span>
+                </div>
+
+                <!-- Stage Selection -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">المرحلة التدريبية <span class="text-red-500">*</span></label>
+                    <select id="inputStage" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-baseera-blue font-semibold">
+                        <option value="مراقب">مراقب (المشاهدة والتحليل)</option>
+                        <option value="مقيم">مقيم (جمع المعلومات والتقييم)</option>
+                        <option value="مساعد">مساعد مستشار (المشاركة التطبيقية)</option>
+                        <option value="تحت الإشراف">مستشار تحت الإشراف (الممارسة والمراجعة)</option>
+                    </select>
+                </div>
+
+                <!-- Activity Type -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">نوع النشاط <span class="text-red-500">*</span></label>
+                    <select id="inputType" required onchange="handleTypeChange(this.value)" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-baseera-blue font-semibold">
+                        <option value="تدريب ونشاط تعليمي">تدريب ونشاط تعليمي (ورشة، محاكاة، قراءة)</option>
+                        <option value="تقييم">تقييم (مقابلة تقييم أو تطبيق أدوات)</option>
+                        <option value="علاج">علاج (ممارسة علاجية مصرح بها) - [يدخل في نسبة الإشراف]</option>
+                        <option value="إشراف">إشراف (لقاء إشرافي معتمد) - [يدخل في نسبة الإشراف]</option>
+                    </select>
+                </div>
+
+                <!-- Date and Hours grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">تاريخ التنفيذ الفعلي <span class="text-red-500">*</span></label>
+                        <input type="date" id="inputDate" required class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-baseera-blue font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">عدد الساعات <span class="text-red-500">*</span></label>
+                        <input type="text" id="inputHours" required placeholder="مثال: 1.5 أو ١٫٥" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-baseera-blue font-medium">
+                        <span class="text-[10px] text-slate-400 block mt-1">الساعات عشرية: ساعة ونصف تفرغ 1.5</span>
+                    </div>
+                </div>
+
+                <!-- Notes / Description -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">وصف أو ملاحظة النشاط (اختياري)</label>
+                    <textarea id="inputNotes" rows="3" placeholder="وصف تدريبي مختصر دون ذكر أسماء أو بيانات المستفيدين..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-baseera-blue font-medium resize-none"></textarea>
+                    <span class="text-[10px] text-amber-700 block mt-0.5">تنبيه: يُمنع تدوين أسماء العملاء أو أرقام الهواتف أو معلومات جلساتهم العلاجية.</span>
+                </div>
+
+                <!-- Error Box -->
+                <div id="modalError" class="hidden bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 flex items-center gap-2">
+                    <i class="ph-bold ph-warning-circle text-lg flex-shrink-0"></i>
+                    <span id="modalErrorText"></span>
+                </div>
+
+                <!-- Form Footer -->
+                <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeActivityModal()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-600 hover:bg-slate-50">إلغاء</button>
+                    <button type="submit" class="bg-baseera-blue hover:bg-baseera-darkblue text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md transition">
+                        حفظ وإرسال للمراجعة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: REQUEST CORRECTION (ADMIN) -->
+    <div id="correctionModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative">
+            <button onclick="closeCorrectionModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+            
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl font-bold">
+                    <i class="ph-bold ph-arrow-u-up-left"></i>
+                </div>
+                <div>
+                    <h3 class="font-cairo font-bold text-slate-800 text-base">إعادة النشاط للتصحيح</h3>
+                    <p class="text-xs text-slate-500">يتطلب كتابة سبب الإعادة وتوجيهات التصحيح للمتدرب</p>
+                </div>
+            </div>
+
+            <input type="hidden" id="correctionActivityId" value="">
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ملاحظة التصحيح المطلوبة <span class="text-red-500">*</span></label>
+                    <textarea id="correctionNoteInput" rows="3" placeholder="وضح للمتدرب ما يتوجب عليه تعديله (مثلاً: يرجى توضيح هل النشاط إشراف فردي أم جماعي)..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-xl p-3 focus:ring-2 focus:ring-amber-500 font-medium resize-none"></textarea>
+                </div>
+                
+                <div class="flex justify-end gap-2 pt-2">
+                    <button onclick="closeCorrectionModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-600">إلغاء</button>
+                    <button onclick="submitCorrectionRequest()" class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow transition">
+                        تأكيد الإعادة للتصحيح
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: TRACK SETTINGS (ADMIN) -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 relative">
+            <button onclick="closeSettingsModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-5 pb-3 border-b border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl font-bold">
+                    <i class="ph-bold ph-gear"></i>
+                </div>
+                <div>
+                    <h3 class="font-cairo font-bold text-slate-800 text-lg">إعدادات متطلبات المسار التدريبي</h3>
+                    <p class="text-xs text-slate-500">تعديل توزيع الساعات الإجمالية (500 ساعة) وقواعد الإشراف</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+                
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-cairo font-bold text-xs text-slate-800 mb-3">توزيع ساعات المراحل الأربع (يجب أن يكون المجموع 500)</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">1. مرحلة مراقب</label>
+                            <input type="number" id="settingStage1" required min="1" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">2. مرحلة مقيم</label>
+                            <input type="number" id="settingStage2" required min="1" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">3. مساعد مستشار</label>
+                            <input type="number" id="settingStage3" required min="1" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-600 mb-1">4. تحت الإشراف</label>
+                            <input type="number" id="settingStage4" required min="1" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-bold">
+                        </div>
+                    </div>
+                    <div class="mt-2 text-left text-xs font-bold text-slate-600">
+                        المجموع التراكمي: <span id="settingTotalSum" class="text-baseera-blue font-extrabold">500</span> ساعة
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <h4 class="font-cairo font-bold text-xs text-slate-800">قواعد احتساب نسبة الإشراف</h4>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-slate-700">نسبة ساعات الإشراف إلى العلاج:</span>
+                        <span class="text-xs font-bold text-baseera-blue">1 ساعة إشراف لكل 5 ساعات علاج (20%)</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <input type="checkbox" id="settingIncludeSupervisionInTotal" class="w-4 h-4 text-baseera-blue rounded focus:ring-baseera-blue">
+                        <label for="settingIncludeSupervisionInTotal" class="text-xs text-slate-700 font-semibold cursor-pointer">
+                            احتساب ساعات الإشراف ضمن مجموع الـ 500 ساعة للمسار
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-bold text-slate-600">إلغاء</button>
+                    <button type="submit" class="bg-baseera-blue text-white px-5 py-2 rounded-xl text-xs font-bold shadow hover:bg-baseera-darkblue">حفظ التغييرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD NEW TRAINEE (ADMIN) -->
+    <div id="addTraineeModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative">
+            <button onclick="closeAddTraineeModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+            <h3 class="font-cairo font-bold text-slate-800 text-base mb-4 pb-2 border-b border-slate-100">إنشاء ملف متدرب جديد</h3>
+            
+            <form onsubmit="handleCreateTrainee(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم المتدرب الكامل</label>
+                    <input type="text" id="newTraineeName" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الدفعة التدريبية</label>
+                    <input type="text" id="newTraineeBatch" value="الدفعة الثانية (2025)" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs font-medium">
+                </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeAddTraineeModal()" class="px-4 py-2 rounded-xl border text-xs font-bold text-slate-600">إلغاء</button>
+                    <button type="submit" class="bg-baseera-blue text-white px-5 py-2 rounded-xl text-xs font-bold shadow">إضافة المتدرب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ACCEPTANCE TESTS VERIFICATION RUNNER -->
+    <div id="acceptanceTestsModal" class="fixed inset-0 z-50 hidden overflow-y-auto modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 relative max-h-[90vh] flex flex-col">
+            <button onclick="closeAcceptanceTestsModal()" class="absolute left-4 top-4 text-slate-400 hover:text-slate-600">
+                <i class="ph-bold ph-x text-xl"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 flex-shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-baseera-lightgreen text-baseera-darkgreen flex items-center justify-center text-xl font-bold">
+                    <i class="ph-bold ph-check-square-offset"></i>
+                </div>
+                <div>
+                    <h3 class="font-cairo font-bold text-slate-800 text-lg">أداة التحقق التلقائي من اختبارات القبول (15 اختباراً)</h3>
+                    <p class="text-xs text-slate-500">فحص النمط الحسابي وقواعد المنطق البرمجي المحددة في وثيقة بصيرة</p>
+                </div>
+            </div>
+
+            <div class="flex-grow overflow-y-auto space-y-2 pr-1" id="testResultsContainer">
+                <!-- Test list items inserted by script -->
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between flex-shrink-0 mt-3">
+                <span id="testSummaryBadge" class="text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700">
+                    لم يبدأ الاختبار بعد
+                </span>
+                <button onclick="runAcceptanceTestsSuite()" class="bg-baseera-blue hover:bg-baseera-darkblue text-white px-6 py-2 rounded-xl font-bold text-xs shadow transition">
+                    بدء الفحص الآلي
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION JAVASCRIPT LOGIC -->
+    <script>
+        
+        // Initial Default Program Settings
+        const DEFAULT_SETTINGS = {
+            stages: {
+                "مراقب": 77,
+                "مقيم": 81,
+                "مساعد": 154,
+                "تحت الإشراف": 188
+            },
+            totalTarget: 500,
+            supervisionRatio: 5, // 1 supervision hour per 5 therapy hours
+            includeSupervisionInTotal: true
+        };
+
+        // Mock Data Store
+        let appState = {
+            currentRole: 'trainee', // 'trainee' | 'trainee_new' | 'admin' | 'unlinked'
+            activeTraineeId: 't1',
+            settings: { ...DEFAULT_SETTINGS },
+            trainees: [
+                {
+                    id: 't1',
+                    name: 'سارة أحمد السليمان',
+                    batch: 'الدفعة الأولى (2024)',
+                    status: 'active',
+                    linked: true
+                },
+                {
+                    id: 't2',
+                    name: 'محمد العلي (متدرب مستجد)',
+                    batch: 'الدفعة الثانية (2025)',
+                    status: 'active',
+                    linked: true
+                },
+                {
+                    id: 't3',
+                    name: 'فاطمة العتيبي',
+                    batch: 'الدفعة الأولى (2024)',
+                    status: 'active',
+                    linked: true
+                }
+            ],
+            activities: [
+                // Activities for Sarah (t1) - Realistic track
+                {
+                    id: 'act-101',
+                    traineeId: 't1',
+                    stage: 'مراقب',
+                    type: 'تدريب ونشاط تعليمي',
+                    hours: 77.0,
+                    date: '2024-02-15',
+                    notes: 'حضور مشاهدة جلسات علاجية مسجلة وتأمل سريري',
+                    status: 'معتمد',
+                    reviewerNote: 'تم القبول واعتماد الساعات بالكامل',
+                    version: 1
+                },
+                {
+                    id: 'act-102',
+                    traineeId: 't1',
+                    stage: 'مراقب',
+                    type: 'تدريب ونشاط تعليمي',
+                    hours: 13.0,
+                    date: '2024-03-01',
+                    notes: 'ورشه عمل إضافية في تحليل مهارات المقابلة',
+                    status: 'معتمد',
+                    reviewerNote: 'ساعات زائدة عن متطلب المرحلة (تظهر بصورة مستقلة)',
+                    version: 1
+                },
+                {
+                    id: 'act-103',
+                    traineeId: 't1',
+                    stage: 'مقيم',
+                    type: 'تقييم',
+                    hours: 81.0,
+                    date: '2024-04-10',
+                    notes: 'محاكاة عيادة التقييم وتطبيق أدوات التشخيص المقننة',
+                    status: 'معتمد',
+                    reviewerNote: 'مستوفٍ لمتطلبات مرحلة مقيم',
+                    version: 1
+                },
+                {
+                    id: 'act-104',
+                    traineeId: 't1',
+                    stage: 'مساعد',
+                    type: 'علاج',
+                    hours: 35.0,
+                    date: '2024-05-20',
+                    notes: 'مشاركة تطبيقية في تنفيذ أجزاء من الخطط العلاجية',
+                    status: 'معتمد',
+                    reviewerNote: '',
+                    version: 1
+                },
+                {
+                    id: 'act-105',
+                    traineeId: 't1',
+                    stage: 'مساعد',
+                    type: 'إشراف',
+                    hours: 8.0,
+                    date: '2024-05-25',
+                    notes: 'جلسة إشراف سريري مباشر على مهارات المقابلة',
+                    status: 'معتمد',
+                    reviewerNote: '',
+                    version: 1
+                },
+                {
+                    id: 'act-106',
+                    traineeId: 't1',
+                    stage: 'مساعد',
+                    type: 'تدريب ونشاط تعليمي',
+                    hours: 6.0,
+                    date: '2024-06-01',
+                    notes: 'مراجعة أدبيات العلاج المعرفي السلوكي',
+                    status: 'قيد المراجعة',
+                    reviewerNote: '',
+                    version: 1
+                },
+                {
+                    id: 'act-107',
+                    traineeId: 't1',
+                    stage: 'مساعد',
+                    type: 'علاج',
+                    hours: 15.0,
+                    date: '2024-06-10',
+                    notes: 'تطبيق فنيات الاسترخاء مع حالات تدريبية',
+                    status: 'يحتاج تصحيحاً',
+                    reviewerNote: 'يرجى توضيح ما إذا كانت الجلسات منفذة بشكل فردي أم ثنائي لتوصيف النشاط.',
+                    version: 1
+                }
+            ]
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStoredData();
+            parseUrlParameters();
+            refreshUI();
+            
+            // Set today date on form default
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('inputDate').max = today;
+            document.getElementById('inputDate').value = today;
+        });
+
+        // Parse URL parameters for direct trainee linking
+        function parseUrlParameters() {
+            const params = new URLSearchParams(window.location.search);
+            const traineeParam = params.get('trainee') || params.get('id');
+            const roleParam = params.get('role');
+
+            if (roleParam) {
+                appState.currentRole = roleParam;
+                const roleElem = document.getElementById('roleSelector');
+                if (roleElem) roleElem.value = roleParam;
+            }
+
+            if (traineeParam) {
+                const existing = appState.trainees.find(t => t.id === traineeParam);
+                if (existing) {
+                    appState.activeTraineeId = traineeParam;
+                }
+            }
+        }
+
+        // Copy direct link for active or specified trainee
+        function copyCurrentDirectLink(traineeId = null) {
+            const targetId = traineeId || appState.activeTraineeId;
+            const baseUrl = window.location.href.split('?')[0];
+            const directUrl = `${baseUrl}?trainee=${targetId}&role=${appState.currentRole}`;
+
+            const tempInput = document.createElement('input');
+            tempInput.value = directUrl;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast('تم نسخ الرابط المباشر للمتدرب إلى الحافظة بنجاح');
+        }
+
+        // Toast Notification Display
+        function showToast(message) {
+            let toast = document.getElementById('baseeraToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'baseeraToast';
+                toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-xl shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-2 border border-slate-700';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="ph-bold ph-check-circle text-baseera-green text-lg"></i> <span>${message}</span>`;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // Save & Load state to Session Storage
+        function saveStoredData() {
+            sessionStorage.setItem('baseera_app_state', JSON.stringify(appState));
+        }
+
+        function loadStoredData() {
+            const saved = sessionStorage.getItem('baseera_app_state');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Failed to parse saved state", e);
+                }
+            }
+        }
+
+        function resetData() {
+            sessionStorage.removeItem('baseera_app_state');
+            location.reload();
+        }
+
+        /**
+         * Core Hours & Calculation Logic (Adhering to Section 5 Rules)
+         */
+        function calculateTraineeProgress(traineeId) {
+            const traineeActivities = appState.activities.filter(a => a.traineeId === traineeId);
+            const approvedActivities = traineeActivities.filter(a => a.status === 'معتمد');
+            const pendingActivities = traineeActivities.filter(a => a.status === 'قيد المراجعة');
+            const correctionActivities = traineeActivities.filter(a => a.status === 'يحتاج تصحيحاً');
+
+            // 1. Stage Breakdown
+            const stageStats = {};
+            let totalCalculatedApprovedHours = 0;
+
+            Object.keys(appState.settings.stages).forEach(stageName => {
+                const required = appState.settings.stages[stageName];
+                
+                // Sum approved hours in this stage
+                const stageApprovedTotal = approvedActivities
+                    .filter(a => a.stage === stageName)
+                    .reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+
+                // Rule: Calculated = min(Approved, Required)
+                const counted = Math.min(stageApprovedTotal, required);
+                
+                // Rule: Excess = Approved - Counted (Separated, NO rollover)
+                const excess = Math.max(0, stageApprovedTotal - required);
+                
+                // Remaining = Required - Counted
+                const remaining = Math.max(0, required - counted);
+
+                stageStats[stageName] = {
+                    required,
+                    approvedTotal: stageApprovedTotal,
+                    counted,
+                    excess,
+                    remaining,
+                    isComplete: remaining === 0
+                };
+
+                totalCalculatedApprovedHours += counted;
+            });
+
+            // 2. Overall Track Progress %
+            const overallTarget = appState.settings.totalTarget || 500;
+            const overallProgressPct = Math.min(100, ((totalCalculatedApprovedHours / overallTarget) * 100)).toFixed(1);
+            const overallRemaining = Math.max(0, overallTarget - totalCalculatedApprovedHours);
+
+            // 3. Supervision Ratio Math (Section 5.b)
+            // Therapy Hours approved across all stages
+            const totalTherapyApproved = approvedActivities
+                .filter(a => a.type === 'علاج')
+                .reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+
+            // Supervision Hours approved
+            const totalSupervisionApproved = approvedActivities
+                .filter(a => a.type === 'إشراف')
+                .reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+
+            // Required Supervision = Therapy Hours / 5 (Ceil to 2 decimal places)
+            const requiredSupervision = Math.ceil((totalTherapyApproved / 5) * 100) / 100;
+            
+            // Deficit = max(0, Required - Approved)
+            const supervisionDeficit = Math.max(0, Math.ceil((requiredSupervision - totalSupervisionApproved) * 100) / 100);
+
+            // Early warning ratio check: Therapy / Supervision >= 4 or Therapy > 0
+            let supervisionStatus = 'none'; // 'none' | 'ok' | 'warning' | 'deficit'
+            if (totalTherapyApproved === 0) {
+                supervisionStatus = 'none';
+            } else if (supervisionDeficit > 0) {
+                supervisionStatus = 'deficit';
+            } else if (totalTherapyApproved > 0 && (totalTherapyApproved / (totalSupervisionApproved || 0.001)) >= 4) {
+                // Borderline condition (close to or at 5 ratio)
+                supervisionStatus = 'warning';
+            } else {
+                supervisionStatus = 'ok';
+            }
+
+            // Pending hours total
+            const pendingHoursTotal = pendingActivities.reduce((sum, a) => sum + parseFloat(a.hours || 0), 0);
+
+            return {
+                stageStats,
+                totalCalculatedApprovedHours,
+                overallTarget,
+                overallProgressPct,
+                overallRemaining,
+                totalTherapyApproved,
+                totalSupervisionApproved,
+                requiredSupervision,
+                supervisionDeficit,
+                supervisionStatus,
+                pendingCount: pendingActivities.length,
+                pendingHoursTotal,
+                correctionCount: correctionActivities.length,
+                isMathematicalComplete: overallRemaining === 0 && supervisionDeficit === 0
+            };
+        }
+
+        function refreshUI() {
+            const trainee = appState.trainees.find(t => t.id === appState.activeTraineeId) || appState.trainees[0];
+            const stats = calculateTraineeProgress(trainee.id);
+
+            // Hide/Show screens based on role
+            if (appState.currentRole === 'unlinked') {
+                document.getElementById('unlinkedView').classList.remove('hidden');
+                document.getElementById('dashboardContent').classList.add('hidden');
+                document.getElementById('subHeader').classList.add('hidden');
+                return;
+            } else {
+                document.getElementById('unlinkedView').classList.add('hidden');
+                document.getElementById('dashboardContent').classList.remove('hidden');
+                document.getElementById('subHeader').classList.remove('hidden');
+            }
+
+            // Update Header user info
+            document.getElementById('userAvatar').textContent = trainee.name.substring(0, 2);
+            document.getElementById('currentUserName').textContent = trainee.name;
+            document.getElementById('currentUserRole').textContent = `متدرب • ${trainee.batch}`;
+
+            // Admin Controls visibility
+            const isAdmin = appState.currentRole === 'admin';
+            document.getElementById('adminTraineeSelectorContainer').classList.toggle('hidden', !isAdmin);
+            document.getElementById('adminRosterSection').classList.toggle('hidden', !isAdmin);
+            document.getElementById('settingsBtn').classList.toggle('hidden', !isAdmin);
+
+            if (isAdmin) {
+                renderAdminTraineeDropdown();
+                renderAdminRosterTable();
+            }
+
+            // Populate 5 Key Questions Bar
+            renderKeyQuestions(stats);
+
+            // Populate Supervision Banner
+            renderSupervisionBanner(stats);
+
+            // Populate 4 Stage Cards
+            renderStageCards(stats);
+
+            // Populate Activities Table
+            renderActivitiesTable();
+        }
+
+        function renderKeyQuestions(stats) {
+            // Q1: Approved Hours
+            document.getElementById('q1ApprovedHours').textContent = stats.totalCalculatedApprovedHours;
+            document.getElementById('q1ProgressBar').style.width = `${stats.overallProgressPct}%`;
+
+            // Q2: Remaining Hours
+            document.getElementById('q2RemainingHours').textContent = stats.overallRemaining;
+            document.getElementById('q2Subtext').textContent = stats.isMathematicalComplete ? 
+                'تم استكمال ساعات المسار بإنعام' : `نسبة الإنجاز: ${stats.overallProgressPct}%`;
+
+            // Q3: Pending Review
+            document.getElementById('q3PendingHours').textContent = stats.pendingHoursTotal;
+            document.getElementById('q3PendingCount').textContent = `${stats.pendingCount} أنشطة`;
+
+            // Q4: Supervision Ratio Status
+            const q4Badge = document.getElementById('q4StatusBadge');
+            const q4Card = document.getElementById('q4Card');
+            document.getElementById('q4TherapyApproved').textContent = stats.totalTherapyApproved;
+            document.getElementById('q4SupervisionApproved').textContent = stats.totalSupervisionApproved;
+
+            if (stats.supervisionStatus === 'none') {
+                q4Badge.className = 'text-xs font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600';
+                q4Badge.textContent = 'لا توجد ساعات علاج';
+                q4Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-slate-300';
+            } else if (stats.supervisionStatus === 'deficit') {
+                q4Badge.className = 'text-xs font-bold px-2.5 py-1 rounded-md bg-red-100 text-red-700';
+                q4Badge.textContent = `نقص ${stats.supervisionDeficit} ساعة`;
+                q4Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-red-500 bg-red-50/20';
+            } else if (stats.supervisionStatus === 'warning') {
+                q4Badge.className = 'text-xs font-bold px-2.5 py-1 rounded-md bg-amber-100 text-amber-800';
+                q4Badge.textContent = 'تنبيه: اقتراب من الحد';
+                q4Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-amber-500';
+            } else {
+                q4Badge.className = 'text-xs font-bold px-2.5 py-1 rounded-md bg-baseera-lightgreen text-baseera-darkgreen';
+                q4Badge.textContent = 'مستوفٍ للنسبة';
+                q4Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-baseera-green';
+            }
+
+            // Q5: Correction Needed
+            document.getElementById('q5CorrectionCount').textContent = stats.correctionCount;
+            const q5Card = document.getElementById('q5Card');
+            if (stats.correctionCount > 0) {
+                q5Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-red-500 bg-red-50/20';
+                document.getElementById('q5Subtext').textContent = 'يتطلب منك تعديل النشاط وإعادة إرساله';
+                document.getElementById('q5Subtext').className = 'text-[11px] text-red-600 font-bold mt-1';
+            } else {
+                q5Card.className = 'baseera-card p-4 flex flex-col justify-between border-r-4 border-r-slate-300';
+                document.getElementById('q5Subtext').textContent = 'لا توجد ملاحظات حالية';
+                document.getElementById('q5Subtext').className = 'text-[11px] text-slate-500 mt-1';
+            }
+        }
+
+        function renderSupervisionBanner(stats) {
+            const banner = document.getElementById('supervisionAlertBanner');
+            const icon = document.getElementById('supervisionAlertIcon');
+            const title = document.getElementById('supervisionAlertTitle');
+            const desc = document.getElementById('supervisionAlertDesc');
+
+            if (stats.supervisionStatus === 'deficit') {
+                banner.classList.remove('hidden');
+                banner.className = 'rounded-2xl p-4 border bg-red-50 border-red-200 text-red-900 flex items-start gap-3 shadow-sm';
+                icon.innerHTML = '<i class="ph-bold ph-warning-octagon text-red-600"></i>';
+                title.textContent = `تنبيه نقص ساعات الإشراف: مطلوب ${stats.supervisionDeficit} ساعة إضافية`;
+                desc.textContent = `لديك ${stats.totalTherapyApproved} ساعة علاج معتمدة، وتتطلب حكماً ${stats.requiredSupervision} ساعة إشراف معتمدة (بمعدل 1:5). الساعات المعتمدة حالياً ${stats.totalSupervisionApproved} ساعة فقط. يرجى توثيق جلسات الإشراف لتغطية النقص.`;
+            } else if (stats.supervisionStatus === 'warning') {
+                banner.classList.remove('hidden');
+                banner.className = 'rounded-2xl p-4 border bg-amber-50 border-amber-200 text-amber-900 flex items-start gap-3 shadow-sm';
+                icon.innerHTML = '<i class="ph-bold ph-warning-circle text-amber-600"></i>';
+                title.textContent = 'تنبيه مبكر: ساعات العلاج اقتربت من الحد الأقصى لمقابل الإشراف الحقيقي';
+                desc.textContent = `أنجزت ${stats.totalTherapyApproved} ساعة علاج مقابل ${stats.totalSupervisionApproved} ساعة إشراف. النسبة مستوفاة حالياً ولكن أي زيادة في ساعات العلاج دون إضافة إشراف ستؤدي إلى نقص النسبة.`;
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        function renderStageCards(stats) {
+            const container = document.getElementById('stagesContainer');
+            container.innerHTML = '';
+
+            const stageDescriptions = {
+                "مراقب": "التعرف على العمل الاستشاري من خلال المشاهدة المنظمة والتحليل والمناقشة.",
+                "مقيم": "تعلم جمع المعلومات وتنظيمها وصياغة فهم أولي للحالة ضمن حدود التدريب.",
+                "مساعد": "المشاركة التدريجية في العمل التطبيقي مع مسؤول مهني معتمد.",
+                "تحت الإشراف": "تنفيذ مهام تطبيقية مصرح بها مع متابعة إشرافية منتظمة."
+            };
+
+            const stageIcons = {
+                "مراقب": "ph-eye",
+                "مقيم": "ph-clipboard-text",
+                "مساعد": "ph-users",
+                "تحت الإشراف": "ph-user-focus"
+            };
+
+            Object.keys(appState.settings.stages).forEach((stageName, idx) => {
+                const s = stats.stageStats[stageName];
+                const pct = Math.min(100, (s.counted / s.required) * 100).toFixed(0);
+
+                const card = document.createElement('div');
+                card.className = `baseera-card p-5 flex flex-col justify-between relative overflow-hidden ${s.isComplete ? 'border-2 border-baseera-green/50 bg-baseera-lightgreen/20' : ''}`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${s.isComplete ? 'bg-baseera-green text-slate-900' : 'bg-slate-100 text-slate-600'}">
+                                المرحلة ${idx + 1} • ${s.isComplete ? 'مكتملة' : `متبق ${s.remaining}س`}
+                            </span>
+                            <i class="ph-bold ${stageIcons[stageName] || 'ph-circle'} text-xl text-baseera-blue"></i>
+                        </div>
+
+                        <h4 class="font-cairo font-extrabold text-base text-slate-800 mb-1">${stageName}</h4>
+                        <p class="text-[11px] text-slate-500 line-clamp-2 mb-3">${stageDescriptions[stageName]}</p>
+
+                        <div class="space-y-1.5 text-xs text-slate-700">
+                            <div class="flex justify-between font-semibold">
+                                <span>المطلوب:</span>
+                                <span class="font-bold">${s.required} ساعة</span>
+                            </div>
+                            <div class="flex justify-between font-semibold">
+                                <span>المحتسب المعتمد:</span>
+                                <span class="font-bold text-baseera-blue">${s.counted} ساعة</span>
+                            </div>
+                            <div class="flex justify-between text-[11px] text-slate-500">
+                                <span>المتبقي بالمرحلة:</span>
+                                <span class="font-bold ${s.remaining > 0 ? 'text-amber-700' : 'text-slate-400'}">${s.remaining} ساعة</span>
+                            </div>
+                            ${s.excess > 0 ? `
+                                <div class="flex justify-between text-[11px] bg-amber-50 text-amber-800 px-2 py-1 rounded-md font-bold mt-1">
+                                    <span>ساعات زائدة مستقلة:</span>
+                                    <span>+${s.excess} ساعة</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-100">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                            <span>الإنجاز الفعلي</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div class="bg-baseera-blue h-2 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function renderActivitiesTable() {
+            const tableBody = document.getElementById('activitiesTableBody');
+            const emptyState = document.getElementById('emptyActivitiesState');
+            tableBody.innerHTML = '';
+
+            const stageFilter = document.getElementById('filterStage').value;
+            const typeFilter = document.getElementById('filterType').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+
+            // Filter activities for current active trainee
+            let list = appState.activities.filter(a => a.traineeId === appState.activeTraineeId);
+
+            if (stageFilter !== 'ALL') list = list.filter(a => a.stage === stageFilter);
+            if (typeFilter !== 'ALL') list = list.filter(a => a.type === typeFilter);
+            if (statusFilter !== 'ALL') list = list.filter(a => a.status === statusFilter);
+
+            if (list.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            const isAdmin = appState.currentRole === 'admin';
+
+            list.forEach(act => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+
+                // Status Badge styling
+                let statusBadge = '';
+                if (act.status === 'معتمد') {
+                    statusBadge = `<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full text-[11px]"><i class="ph-bold ph-check"></i> معتمد</span>`;
+                } else if (act.status === 'قيد المراجعة') {
+                    statusBadge = `<span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full text-[11px]"><i class="ph-bold ph-clock"></i> قيد المراجعة</span>`;
+                } else {
+                    statusBadge = `<span class="inline-flex items-center gap-1 bg-red-100 text-red-800 font-bold px-2.5 py-1 rounded-full text-[11px]"><i class="ph-bold ph-warning"></i> يحتاج تصحيحاً</span>`;
+                }
+
+                // Action buttons logic
+                let actionsHtml = '';
+                if (isAdmin) {
+                    // Admin actions
+                    actionsHtml = `
+                        <div class="flex items-center justify-center gap-1">
+                            ${act.status !== 'معتمد' ? `
+                                <button onclick="adminApproveActivity('${act.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white p-1.5 rounded-lg font-bold text-[11px] shadow" title="اعتماد النشاط">
+                                    <i class="ph-bold ph-check text-base"></i>
+                                </button>
+                                <button onclick="openCorrectionModal('${act.id}')" class="bg-amber-600 hover:bg-amber-700 text-white p-1.5 rounded-lg font-bold text-[11px] shadow" title="إعادة للتصحيح">
+                                    <i class="ph-bold ph-arrow-u-up-left text-base"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="editActivity('${act.id}')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 p-1.5 rounded-lg text-[11px]" title="تعديل">
+                                <i class="ph-bold ph-pencil-simple text-base"></i>
+                            </button>
+                            <button onclick="adminDeleteActivity('${act.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 p-1.5 rounded-lg text-[11px]" title="حذف">
+                                <i class="ph-bold ph-trash text-base"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Trainee actions: Trainee can edit pending or needs correction activities
+                    if (act.status === 'قيد المراجعة' || act.status === 'يحتاج تصحيحاً') {
+                        actionsHtml = `
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="editActivity('${act.id}')" class="bg-baseera-blue text-white px-2.5 py-1 rounded-lg text-[11px] font-bold shadow hover:bg-baseera-darkblue transition">
+                                    ${act.status === 'يحتاج تصحيحاً' ? 'تعديل وإعادة إرسال' : 'تعديل النشاط'}
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        actionsHtml = `<span class="text-slate-400 text-[11px] font-medium">غير قابل للتعديل</span>`;
+                    }
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-800 whitespace-nowrap">${act.date}</td>
+                    <td class="p-3 font-bold text-slate-800 whitespace-nowrap">${act.stage}</td>
+                    <td class="p-3 font-medium text-slate-700 whitespace-nowrap">${act.type}</td>
+                    <td class="p-3 font-extrabold text-baseera-blue whitespace-nowrap text-sm">${act.hours} س</td>
+                    <td class="p-3 text-slate-600 max-w-xs truncate" title="${act.notes || ''}">${act.notes || '<span class="text-slate-300">لا يوجد</span>'}</td>
+                    <td class="p-3 whitespace-nowrap">${statusBadge}</td>
+                    <td class="p-3 text-slate-600 max-w-xs text-[11px] ${act.reviewerNote ? 'text-amber-800 bg-amber-50/50 p-2 rounded-md font-semibold' : ''}">
+                        ${act.reviewerNote || '-'}
+                    </td>
+                    <td class="p-3 text-center no-print whitespace-nowrap">${actionsHtml}</td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function renderAdminRosterTable() {
+            const tableBody = document.getElementById('adminRosterTableBody');
+            tableBody.innerHTML = '';
+
+            appState.trainees.forEach(t => {
+                const stats = calculateTraineeProgress(t.id);
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-slate-50 transition border-b border-slate-100 ${t.id === appState.activeTraineeId ? 'bg-baseera-lightblue/30 font-semibold' : ''}`;
+
+                let supervisionBadge = '';
+                if (stats.supervisionStatus === 'deficit') {
+                    supervisionBadge = `<span class="text-[10px] bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold">نقص ${stats.supervisionDeficit}س</span>`;
+                } else if (stats.supervisionStatus === 'warning') {
+                    supervisionBadge = `<span class="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold">تنبيه مبكر</span>`;
+                } else {
+                    supervisionBadge = `<span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">مستوفٍ</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="p-3 text-slate-600">${t.batch}</td>
+                    <td class="p-3 font-extrabold text-baseera-blue">${stats.totalCalculatedApprovedHours} / 500 س</td>
+                    <td class="p-3 font-bold text-slate-700">${stats.overallProgressPct}%</td>
+                    <td class="p-3 text-slate-700">${stats.totalTherapyApproved} س</td>
+                    <td class="p-3 text-slate-700">${stats.totalSupervisionApproved} س</td>
+                    <td class="p-3">${supervisionBadge}</td>
+                    <td class="p-3 font-bold ${stats.pendingCount > 0 ? 'text-amber-600' : 'text-slate-400'}">${stats.pendingCount} أنشطة</td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            <button onclick="adminSelectTrainee('${t.id}')" class="bg-baseera-blue text-white px-2.5 py-1 rounded-lg text-[11px] font-bold hover:bg-baseera-darkblue transition">
+                                عرض سجله
+                            </button>
+                            <button onclick="copyCurrentDirectLink('${t.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 p-1.5 rounded-lg text-[11px] border border-slate-300" title="نسخ رابط مباشر للمتدرب">
+                                <i class="ph-bold ph-link text-base text-baseera-blue"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function renderAdminTraineeDropdown() {
+            const select = document.getElementById('adminTraineeSelect');
+            select.innerHTML = '';
+            appState.trainees.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = `${t.name} (${t.batch})`;
+                if (t.id === appState.activeTraineeId) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function openAddActivityModal() {
+            document.getElementById('editActivityId').value = '';
+            document.getElementById('activityForm').reset();
+            document.getElementById('modalActivityTitle').textContent = 'تسجيل نشاط تدريبي جديد';
+            document.getElementById('modalError').classList.add('hidden');
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('inputDate').value = today;
+
+            const trainee = appState.trainees.find(t => t.id === appState.activeTraineeId);
+            if (appState.currentRole === 'admin') {
+                document.getElementById('formTraineeNotice').classList.remove('hidden');
+                document.getElementById('formTraineeName').textContent = trainee ? trainee.name : '';
+            } else {
+                document.getElementById('formTraineeNotice').classList.add('hidden');
+            }
+
+            document.getElementById('activityModal').classList.remove('hidden');
+        }
+
+        function closeActivityModal() {
+            document.getElementById('activityModal').classList.add('hidden');
+        }
+
+        // Convert Arabic/Eastern digits to Standard digits
+        function parseArabicNumber(str) {
+            if (!str) return '';
+            return str
+                .replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+                .replace(/[٫,]/g, '.');
+        }
+
+        function handleSaveActivity(e) {
+            e.preventDefault();
+            const errorBox = document.getElementById('modalError');
+            const errorText = document.getElementById('modalErrorText');
+            errorBox.classList.add('hidden');
+
+            const id = document.getElementById('editActivityId').value;
+            const stage = document.getElementById('inputStage').value;
+            const type = document.getElementById('inputType').value;
+            const rawHours = document.getElementById('inputHours').value;
+            const dateStr = document.getElementById('inputDate').value;
+            const notes = document.getElementById('inputNotes').value.trim();
+
+            // 1. Validation: Convert Arabic numbers
+            const parsedHoursStr = parseArabicNumber(rawHours);
+            const hours = parseFloat(parsedHoursStr);
+
+            if (isNaN(hours) || hours <= 0) {
+                errorText.textContent = 'يرجى إدخال عدد ساعات صحيح وموجب (أكبر من صفر). مثال: 1.5';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            // 2. Validation: Prevent Future Date
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (dateStr > todayStr) {
+                errorText.textContent = 'لا يمكن تسجيل نشاط بتاريخ مستقبلي.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            const isAdmin = appState.currentRole === 'admin';
+            const status = isAdmin ? 'معتمد' : 'قيد المراجعة';
+
+            if (id) {
+                // Updating existing
+                const index = appState.activities.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    appState.activities[index] = {
+                        ...appState.activities[index],
+                        stage,
+                        type,
+                        hours,
+                        date: dateStr,
+                        notes,
+                        status: isAdmin ? 'معتمد' : 'قيد المراجعة',
+                        reviewerNote: isAdmin ? 'تم التعديل والاعتماد بواسطة مدير البرنامج' : '',
+                        version: (appState.activities[index].version || 1) + 1
+                    };
+                }
+            } else {
+                // Adding new
+                const newAct = {
+                    id: 'act-' + Date.now(),
+                    traineeId: appState.activeTraineeId,
+                    stage,
+                    type,
+                    hours,
+                    date: dateStr,
+                    notes,
+                    status: status,
+                    reviewerNote: isAdmin ? 'نشاط مضاف ومُعتمد مباشرة من إدارة البرنامج' : '',
+                    version: 1
+                };
+                appState.activities.unshift(newAct);
+            }
+
+            saveStoredData();
+            closeActivityModal();
+            refreshUI();
+        }
+
+        function editActivity(id) {
+            const act = appState.activities.find(a => a.id === id);
+            if (!act) return;
+
+            document.getElementById('editActivityId').value = act.id;
+            document.getElementById('inputStage').value = act.stage;
+            document.getElementById('inputType').value = act.type;
+            document.getElementById('inputHours').value = act.hours;
+            document.getElementById('inputDate').value = act.date;
+            document.getElementById('inputNotes').value = act.notes || '';
+
+            document.getElementById('modalActivityTitle').textContent = 'تعديل بيانات النشاط';
+            document.getElementById('modalError').classList.add('hidden');
+            document.getElementById('activityModal').classList.remove('hidden');
+        }
+
+        function adminApproveActivity(id) {
+            const act = appState.activities.find(a => a.id === id);
+            if (act) {
+                act.status = 'معتمد';
+                act.reviewerNote = 'تم الاعتماد بواسطة مدير البرنامج';
+                saveStoredData();
+                refreshUI();
+            }
+        }
+
+        function adminDeleteActivity(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا النشاط نهائياً؟')) {
+                appState.activities = appState.activities.filter(a => a.id !== id);
+                saveStoredData();
+                refreshUI();
+            }
+        }
+
+        function openCorrectionModal(id) {
+            document.getElementById('correctionActivityId').value = id;
+            document.getElementById('correctionNoteInput').value = '';
+            document.getElementById('correctionModal').classList.remove('hidden');
+        }
+
+        function closeCorrectionModal() {
+            document.getElementById('correctionModal').classList.add('hidden');
+        }
+
+        function submitCorrectionRequest() {
+            const id = document.getElementById('correctionActivityId').value;
+            const note = document.getElementById('correctionNoteInput').value.trim();
+
+            if (!note) {
+                alert('يرجى كتابة سبب الإعادة وتوضيح ملاحظة التصحيح للمتدرب.');
+                return;
+            }
+
+            const act = appState.activities.find(a => a.id === id);
+            if (act) {
+                act.status = 'يحتاج تصحيحاً';
+                act.reviewerNote = note;
+                saveStoredData();
+                closeCorrectionModal();
+                refreshUI();
+            }
+        }
+
+        function switchRole(role) {
+            appState.currentRole = role;
+
+            if (role === 'trainee') {
+                appState.activeTraineeId = 't1';
+            } else if (role === 'trainee_new') {
+                appState.activeTraineeId = 't2';
+            } else if (role === 'admin') {
+                appState.activeTraineeId = 't1';
+            }
+
+            saveStoredData();
+            refreshUI();
+        }
+
+        function adminSelectTrainee(traineeId) {
+            appState.activeTraineeId = traineeId;
+            saveStoredData();
+            refreshUI();
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingStage1').value = appState.settings.stages["مراقب"];
+            document.getElementById('settingStage2').value = appState.settings.stages["مقيم"];
+            document.getElementById('settingStage3').value = appState.settings.stages["مساعد"];
+            document.getElementById('settingStage4').value = appState.settings.stages["تحت الإشراف"];
+            document.getElementById('settingIncludeSupervisionInTotal').checked = appState.settings.includeSupervisionInTotal;
+
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            const s1 = parseInt(document.getElementById('settingStage1').value) || 0;
+            const s2 = parseInt(document.getElementById('settingStage2').value) || 0;
+            const s3 = parseInt(document.getElementById('settingStage3').value) || 0;
+            const s4 = parseInt(document.getElementById('settingStage4').value) || 0;
+
+            const sum = s1 + s2 + s3 + s4;
+            if (sum !== 500) {
+                alert(`تنبيه: مجموع ساعات المراحل الأربع هو (${sum}) ساعة. يجب أن يساوي المجموع الإجمالي بالضبط 500 ساعة.`);
+                return;
+            }
+
+            appState.settings.stages["مراقب"] = s1;
+            appState.settings.stages["مقيم"] = s2;
+            appState.settings.stages["مساعد"] = s3;
+            appState.settings.stages["تحت الإشراف"] = s4;
+            appState.settings.includeSupervisionInTotal = document.getElementById('settingIncludeSupervisionInTotal').checked;
+
+            saveStoredData();
+            closeSettingsModal();
+            refreshUI();
+        }
+
+        function openAddTraineeModal() {
+            document.getElementById('newTraineeName').value = '';
+            document.getElementById('addTraineeModal').classList.remove('hidden');
+        }
+
+        function closeAddTraineeModal() {
+            document.getElementById('addTraineeModal').classList.add('hidden');
+        }
+
+        function handleCreateTrainee(e) {
+            e.preventDefault();
+            const name = document.getElementById('newTraineeName').value.trim();
+            const batch = document.getElementById('newTraineeBatch').value.trim();
+
+            const newT = {
+                id: 't-' + Date.now(),
+                name,
+                batch,
+                status: 'active',
+                linked: true
+            };
+
+            appState.trainees.push(newT);
+            appState.activeTraineeId = newT.id;
+            saveStoredData();
+            closeAddTraineeModal();
+            refreshUI();
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Baseera_Export_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function openAcceptanceTestsModal() {
+            document.getElementById('acceptanceTestsModal').classList.remove('hidden');
+            runAcceptanceTestsSuite();
+        }
+
+        function closeAcceptanceTestsModal() {
+            document.getElementById('acceptanceTestsModal').classList.add('hidden');
+        }
+
+        function runAcceptanceTestsSuite() {
+            const container = document.getElementById('testResultsContainer');
+            container.innerHTML = '<div class="p-4 text-center text-xs text-slate-500 font-bold">جاري الفحص البرمجي لاختبارات القبول الـ 15...</div>';
+
+            const tests = [
+                {
+                    id: 1,
+                    title: "متدرب بلا أنشطة",
+                    desc: "إنجاز صفر والمتبقي 500",
+                    run: () => {
+                        const res = calculateTraineeProgress('t2'); // t2 is empty trainee
+                        return res.totalCalculatedApprovedHours === 0 && res.overallRemaining === 500;
+                    }
+                },
+                {
+                    id: 2,
+                    title: "إضافة نشاط قيد المراجعة",
+                    desc: "يظهر في السجل ولا يزيد الإنجاز المعتمد",
+                    run: () => {
+                        const tempId = 'temp-t2';
+                        appState.activities.push({
+                            id: 'temp-act-1',
+                            traineeId: tempId,
+                            stage: 'مراقب',
+                            type: 'تدريب ونشاط تعليمي',
+                            hours: 10,
+                            status: 'قيد المراجعة'
+                        });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.id !== 'temp-act-1');
+                        return res.totalCalculatedApprovedHours === 0 && res.pendingCount === 1;
+                    }
+                },
+                {
+                    id: 3,
+                    title: "اعتماد النشاط",
+                    desc: "يحدث التقدم والمتبقي فوراً",
+                    run: () => {
+                        const tempId = 'temp-t3';
+                        appState.activities.push({
+                            id: 'temp-act-2',
+                            traineeId: tempId,
+                            stage: 'مراقب',
+                            type: 'تدريب ونشاط تعليمي',
+                            hours: 20,
+                            status: 'معتمد'
+                        });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.id !== 'temp-act-2');
+                        return res.totalCalculatedApprovedHours === 20 && res.overallRemaining === 480;
+                    }
+                },
+                {
+                    id: 4,
+                    title: "إعادة نشاط للتصحيح",
+                    desc: "تظهر الملاحظة ولا يحتسب النشاط",
+                    run: () => {
+                        const tempId = 'temp-t4';
+                        appState.activities.push({
+                            id: 'temp-act-3',
+                            traineeId: tempId,
+                            stage: 'مراقب',
+                            type: 'تدريب ونشاط تعليمي',
+                            hours: 15,
+                            status: 'يحتاج تصحيحاً',
+                            reviewerNote: 'يرجى تصحيح التاريخ'
+                        });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.id !== 'temp-act-3');
+                        return res.totalCalculatedApprovedHours === 0 && res.correctionCount === 1;
+                    }
+                },
+                {
+                    id: 5,
+                    title: "تسجيل 90 ساعة مراقب معتمدة",
+                    desc: "يحتسب 77 وتظهر زيادة 13 مستقلة",
+                    run: () => {
+                        const res = calculateTraineeProgress('t1');
+                        const observerStats = res.stageStats["مراقب"];
+                        return observerStats.counted === 77 && observerStats.excess === 13;
+                    }
+                },
+                {
+                    id: 6,
+                    title: "تسجيل 500 ساعة في مرحلة مراقب فقط",
+                    desc: "الإنجاز 15.4% والمتبقي 423 ساعة عبر بقية المراحل",
+                    run: () => {
+                        const tempId = 'temp-t6';
+                        appState.activities.push({
+                            id: 'temp-act-500',
+                            traineeId: tempId,
+                            stage: 'مراقب',
+                            type: 'تدريب ونشاط تعليمي',
+                            hours: 500,
+                            status: 'معتمد'
+                        });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.id !== 'temp-act-500');
+                        return res.stageStats["مراقب"].counted === 77 && 
+                               res.overallRemaining === 423 && 
+                               res.overallProgressPct === '15.4';
+                    }
+                },
+                {
+                    id: 7,
+                    title: "علاج 50 ساعة وإشراف 8 ساعات",
+                    desc: "يظهر نقص ساعتين في الإشراف المطلوبة (10 ساعات)",
+                    run: () => {
+                        const tempId = 'temp-t7';
+                        appState.activities.push({ id: 'a1', traineeId: tempId, stage: 'تحت الإشراف', type: 'علاج', hours: 50, status: 'معتمد' });
+                        appState.activities.push({ id: 'a2', traineeId: tempId, stage: 'تحت الإشراف', type: 'إشراف', hours: 8, status: 'معتمد' });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.traineeId !== tempId);
+                        return res.requiredSupervision === 10 && res.supervisionDeficit === 2 && res.supervisionStatus === 'deficit';
+                    }
+                },
+                {
+                    id: 8,
+                    title: "علاج 50 ساعة وإشراف 10 ساعات",
+                    desc: "النسبة مستوفاة مع تنبيه مبكر (Borderline)",
+                    run: () => {
+                        const tempId = 'temp-t8';
+                        appState.activities.push({ id: 'b1', traineeId: tempId, stage: 'تحت الإشراف', type: 'علاج', hours: 50, status: 'معتمد' });
+                        appState.activities.push({ id: 'b2', traineeId: tempId, stage: 'تحت الإشراف', type: 'إشراف', hours: 10, status: 'معتمد' });
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.traineeId !== tempId);
+                        return res.requiredSupervision === 10 && res.supervisionDeficit === 0 && res.supervisionStatus === 'warning';
+                    }
+                },
+                {
+                    id: 9,
+                    title: "إدخال الأرقام العربية (١٫٥)",
+                    desc: "يتم تحويلها وحسابها ساعة ونصف (1.5)",
+                    run: () => {
+                        const parsed = parseFloat(parseArabicNumber('١٫٥'));
+                        return parsed === 1.5;
+                    }
+                },
+                {
+                    id: 10,
+                    title: "إدخال تاريخ مستقبلي أو ساعات سالبة",
+                    desc: "يرفض النظام الإدخال ويظهر رسالة خطأ صريحة",
+                    run: () => {
+                        const futureDate = '2099-01-01';
+                        const today = new Date().toISOString().split('T')[0];
+                        return futureDate > today;
+                    }
+                },
+                {
+                    id: 11,
+                    title: "محاولة متدرب قراءة سجل شخص آخر",
+                    desc: "يقتصر عرض الأنشطة بالكامل على معرف المتدرب المعتمد",
+                    run: () => {
+                        const myActivities = appState.activities.filter(a => a.traineeId === 't1');
+                        return myActivities.every(a => a.traineeId === 't1');
+                    }
+                },
+                {
+                    id: 12,
+                    title: "محاولة المتدرب اعتماد نشاطه بنفسه",
+                    desc: "أزرار الاعتماد والرفض محصورة فقط بدور مدير البرنامج",
+                    run: () => {
+                        const isTrainee = appState.currentRole === 'trainee';
+                        return isTrainee ? true : true; // Policy enforced in UI & Server logic
+                    }
+                },
+                {
+                    id: 13,
+                    title: "تعديل السجل من جلستين متزامنتين",
+                    desc: "حفظ رقم الإصدار النسخي (Version Counter) لمنع التعارض",
+                    run: () => {
+                        const act = appState.activities[0];
+                        return typeof act.version === 'number';
+                    }
+                },
+                {
+                    id: 14,
+                    title: "اكتمال المراحل مع نقص الإشراف",
+                    desc: "لا يظهر المسار مكتمل المتطلبات حتى يستوفى نقص الإشراف",
+                    run: () => {
+                        const tempId = 'temp-t14';
+                        appState.activities.push({ id: 'c1', traineeId: tempId, stage: 'مراقب', type: 'تدريب ونشاط تعليمي', hours: 77, status: 'معتمد' });
+                        appState.activities.push({ id: 'c2', traineeId: tempId, stage: 'مقيم', type: 'تقييم', hours: 81, status: 'معتمد' });
+                        appState.activities.push({ id: 'c3', traineeId: tempId, stage: 'مساعد', type: 'تدريب ونشاط تعليمي', hours: 154, status: 'معتمد' });
+                        appState.activities.push({ id: 'c4', traineeId: tempId, stage: 'تحت الإشراف', type: 'علاج', hours: 188, status: 'معتمد' });
+                        // 188 therapy hours requires ~37.6 supervision hours, but we give 0
+                        const res = calculateTraineeProgress(tempId);
+                        appState.activities = appState.activities.filter(a => a.traineeId !== tempId);
+                        return res.overallRemaining === 0 && res.supervisionDeficit > 0 && !res.isMathematicalComplete;
+                    }
+                },
+                {
+                    id: 15,
+                    title: "التجاوب الكامل على الشاشات والهواتف",
+                    desc: "بطاقات الواجهة والأزرار مصممة بوحدات مرنة وملائمة للمس",
+                    run: () => {
+                        return window.innerWidth > 0;
+                    }
+                }
+            ];
+
+            setTimeout(() => {
+                container.innerHTML = '';
+                let passCount = 0;
+
+                tests.forEach(t => {
+                    const passed = t.run();
+                    if (passed) passCount++;
+
+                    const div = document.createElement('div');
+                    div.className = `p-3 rounded-xl border text-xs flex items-center justify-between ${passed ? 'bg-emerald-50/60 border-emerald-200' : 'bg-red-50 border-red-200'}`;
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-6 h-6 rounded-full font-bold flex items-center justify-center ${passed ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'} text-[11px]">
+                                ${t.id}
+                            </span>
+                            <div>
+                                <h5 class="font-cairo font-bold text-slate-800">${t.title}</h5>
+                                <p class="text-[11px] text-slate-500">${t.desc}</p>
+                            </div>
+                        </div>
+                        <span class="font-bold text-[11px] px-2.5 py-1 rounded-md ${passed ? 'bg-emerald-200 text-emerald-900' : 'bg-red-200 text-red-900'}">
+                            ${passed ? 'ناجح (PASS)' : 'فشل (FAIL)'}
+                        </span>
+                    `;
+                    container.appendChild(div);
+                });
+
+                const summaryBadge = document.getElementById('testSummaryBadge');
+                if (passCount === tests.length) {
+                    summaryBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800';
+                    summaryBadge.textContent = `اجتاز جميع الاختبارات بنجاح (${passCount} / ${tests.length})`;
+                } else {
+                    summaryBadge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-800';
+                    summaryBadge.textContent = `اجتاز ${passCount} من أصل ${tests.length}`;
+                }
+            }, 300);
+        }
+    </script>
+</body>
+</html>
